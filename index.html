@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>輔大企管交換學生版圖 - 極簡手機版</title>
+<title>輔大企管交換學生版圖 - 互動手機版</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
@@ -27,7 +27,7 @@ body {
   box-shadow: 0 0 20px rgba(0,0,0,0.1);
 }
 
-/* ── 頁面切換動畫 ── */
+/* ── 頁面切換 ── */
 .page {
   position: absolute; width: 100%; height: 100%;
   display: flex; flex-direction: column;
@@ -36,19 +36,18 @@ body {
 }
 .hidden { opacity: 0; pointer-events: none; transform: translateX(20px); }
 
-/* ──【頁面 1：極簡首頁】── */
+/* ──【頁面 1：修正後首頁】── */
 #hero-page {
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* 讓內容均勻分布 */
   text-align: center;
 }
 
 .hero-header {
   background: linear-gradient(135deg, #6C5CE7 0%, #a29bfe 45%, #fd79a8 100%);
-  padding: 60px 20px 50px;
+  padding: 60px 20px 40px;
   color: white;
-  border-radius: 0 0 40px 40px; /* 底部圓角 */
+  border-radius: 0 0 40px 40px;
 }
 .logo-badge {
   width: 70px; height: 70px; border-radius: 20px;
@@ -57,65 +56,64 @@ body {
   font-size: 36px; color: white; margin: 0 auto 20px;
 }
 .main-title {
-  font-size: 32px; font-weight: 900; letter-spacing: 2px; margin-bottom: 10px;
+  font-size: 30px; font-weight: 900; letter-spacing: 2px; margin-bottom: 8px;
 }
-.subtitle { font-size: 16px; color: rgba(255, 255, 255, 0.9); letter-spacing: 4px; font-weight: 700; }
+.subtitle { font-size: 15px; color: rgba(255, 255, 255, 0.9); letter-spacing: 4px; font-weight: 700; }
 
-/* 核心修改：按鈕垂直置中 */
-.cta-area {
-  flex: 1; 
+/* 核心修改：按鈕與數字一起置中靠攏 */
+.cta-stats-wrapper {
+  flex: 1;
   display: flex;
-  align-items: center; 
-  justify-content: center;
+  flex-direction: column;
+  justify-content: center; /* 垂直置中 */
   padding: 0 30px;
+  gap: 40px; /* 按鈕與數字的間距 */
 }
+
 .explore-btn {
   background: linear-gradient(135deg, #6C5CE7 0%, #FD79A8 100%);
-  color: white; font-size: 24px; font-weight: 900; padding: 22px 0; border-radius: 60px;
-  box-shadow: 0 15px 30px rgba(108, 92, 231, 0.3);
-  border: none; cursor: pointer; letter-spacing: 4px; 
-  width: 100%;
+  color: white; font-size: 22px; font-weight: 900; padding: 20px 0; border-radius: 60px;
+  box-shadow: 0 12px 25px rgba(108, 92, 231, 0.3);
+  border: none; cursor: pointer; letter-spacing: 4px; width: 100%;
   animation: pulse 2s infinite;
 }
-@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
 
-/* 核心修改：數據下移至底部 */
 .hero-stats {
   display: flex; justify-content: space-around; 
-  padding: 40px 15px 80px; /* 增加底部間距 */
-  background: white;
 }
 .stat-box { text-align: center; }
-.hero-stat-num { font-size: 42px; font-weight: 900; color: #6C5CE7; line-height: 1; margin-bottom: 8px; }
-.hero-stat-label { font-size: 14px; color: #2D3436; font-weight: 700; }
+.hero-stat-num { font-size: 40px; font-weight: 900; color: #6C5CE7; line-height: 1; margin-bottom: 5px; }
+.hero-stat-label { font-size: 13px; color: #636E72; font-weight: 700; }
 
-/* ──【頁面 2：手機名單頁】── */
+/* ──【頁面 2：名單頁】── */
 .list-header {
   background: #2C3E50; padding: 15px 20px;
   display: flex; justify-content: space-between; align-items: center; color: white;
 }
 .back-btn {
-  font-size: 14px; font-weight: 800; color: white; background: rgba(255,255,255,0.1);
+  font-size: 13px; font-weight: 800; color: white; background: rgba(255,255,255,0.1);
   padding: 8px 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2);
 }
-.list-map-mini { height: 160px; background: #F8F9FF; position: relative; }
+/* 名單頁小地圖區 */
+.list-map-mini { height: 180px; background: #F8F9FF; position: relative; border-bottom: 1px solid #EEE; }
+
 .country-list-container {
-  flex: 1; overflow-y: auto; padding: 20px;
-  display: flex; flex-direction: column; gap: 15px; background: #F4F7FF;
+  flex: 1; overflow-y: auto; padding: 15px;
+  display: flex; flex-direction: column; gap: 12px; background: #F4F7FF;
 }
 .country-btn {
-  background: white; border-radius: 15px; padding: 18px 20px;
+  background: white; border-radius: 15px; padding: 15px 20px;
   display: flex; align-items: center; justify-content: space-between;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #EEE;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.04); border: 1px solid #EEE;
 }
 .country-info { display: flex; align-items: center; gap: 15px; }
-.country-flag { font-size: 36px; }
-.country-name-zh { font-size: 20px; font-weight: 900; color: #2D3436; }
-.country-name-en { font-size: 12px; color: #BBB; font-weight: 700; text-transform: uppercase; }
+.country-flag { font-size: 34px; }
+.country-name-zh { font-size: 19px; font-weight: 900; color: #2D3436; }
+.country-name-en { font-size: 11px; color: #BBB; font-weight: 700; text-transform: uppercase; }
 .country-count {
-  background: #6C5CE7; color: white;
-  padding: 6px 15px; border-radius: 20px;
-  font-size: 16px; font-weight: 800;
+  background: #6C5CE7; color: white; padding: 5px 12px; border-radius: 20px;
+  font-size: 14px; font-weight: 800;
 }
 
 /* ── 手機版 Modal ── */
@@ -125,21 +123,21 @@ body {
   z-index: 10000; backdrop-filter: blur(8px);
 }
 .modal-content {
-  width: 100%; height: 85%; background: white; border-radius: 30px 30px 0 0;
+  width: 100%; height: 82%; background: white; border-radius: 25px 25px 0 0;
   display: flex; flex-direction: column; overflow: hidden;
   animation: slideUp 0.3s ease-out;
 }
 @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-.modal-header { padding: 30px 20px; color: white; text-align: center; position: relative; }
-.close-btn { position: absolute; top: 15px; right: 20px; font-size: 32px; color: white; }
-.student-grid { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
-.student-card { background: #F8F9FA; padding: 18px; border-radius: 12px; border: 1px solid #EEE; }
+.modal-header { padding: 25px 20px; color: white; text-align: center; position: relative; }
+.close-btn { position: absolute; top: 12px; right: 20px; font-size: 32px; color: white; }
+.student-grid { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px; }
+.student-card { background: #F8F9FA; padding: 15px; border-radius: 12px; border: 1px solid #EEE; }
 .st-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-.st-name { font-size: 20px; font-weight: 900; color: #2D3436; }
-.st-year { font-size: 13px; font-weight: 800; padding: 4px 10px; border-radius: 6px; }
-.st-sch { font-size: 15px; color: #555; font-weight: 700; border-left: 5px solid #6C5CE7; padding-left: 12px; margin-top: 5px; }
+.st-name { font-size: 18px; font-weight: 900; color: #2D3436; }
+.st-year { font-size: 12px; font-weight: 800; padding: 3px 10px; border-radius: 6px; }
+.st-sch { font-size: 14px; color: #555; font-weight: 700; border-left: 4px solid #6C5CE7; padding-left: 10px; margin-top: 5px; }
 
-.footer { padding: 20px; text-align: center; font-size: 12px; font-weight: 800; color: #999; background: white; }
+.footer { padding: 15px; text-align: center; font-size: 11px; font-weight: 800; color: #BBB; background: white; }
 </style>
 </head>
 <body>
@@ -153,25 +151,29 @@ body {
       <p class="subtitle">FJCU BUSINESS ADMINISTRATION</p>
     </div>
 
-    <div class="cta-area">
+    <div class="cta-stats-wrapper">
       <button class="explore-btn" onclick="showListPage()">點此探索全球據點</button>
+      
+      <div class="hero-stats">
+        <div class="stat-box"><div class="hero-stat-num">11</div><div class="hero-stat-label">國家地區</div></div>
+        <div class="stat-box"><div class="hero-stat-num">33</div><div class="hero-stat-label">合作院校</div></div>
+        <div class="stat-box"><div class="hero-stat-num">47</div><div class="hero-stat-label">交換學子</div></div>
+      </div>
     </div>
 
-    <div class="hero-stats">
-      <div class="stat-box"><div class="hero-stat-num">11</div><div class="hero-stat-label">國家地區</div></div>
-      <div class="stat-box"><div class="hero-stat-num">33</div><div class="hero-stat-label">合作院校</div></div>
-      <div class="stat-box"><div class="hero-stat-num">47</div><div class="hero-stat-label">交換學子</div></div>
-    </div>
+    <div style="padding-bottom: 40px; font-size: 12px; color: #CBD5E0; font-weight: 700;">點擊螢幕開始體驗互動版圖</div>
   </div>
 
   <div id="list-page" class="page hidden">
     <div class="list-header">
-      <div style="font-size: 20px; font-weight: 900;">🌍 據點探索</div>
+      <div style="font-size: 18px; font-weight: 900;">🌍 據點探索</div>
       <div class="back-btn" onclick="showHeroPage()">🏠 返回</div>
     </div>
+    
     <div class="list-map-mini">
       <svg id="list-map-svg" style="width:100%; height:100%;"></svg>
     </div>
+
     <div class="country-list-container" id="country-list">
       </div>
     <div class="footer">🌐 國際視野 | 📚 跨域學習 | 🤝 文化交流</div>
@@ -181,8 +183,8 @@ body {
     <div class="modal-content">
       <div class="modal-header" id="modal-header">
         <div class="close-btn" onclick="closeModal()">×</div>
-        <div id="modal-title-zh" style="font-size: 28px; font-weight: 900;"></div>
-        <div id="modal-title-en" style="font-size: 14px; opacity: 0.8; margin-top: 5px;"></div>
+        <div id="modal-title-zh" style="font-size: 26px; font-weight: 900;"></div>
+        <div id="modal-title-en" style="font-size: 13px; opacity: 0.8; margin-top: 5px;"></div>
       </div>
       <div class="student-grid" id="student-container"></div>
     </div>
@@ -254,7 +256,7 @@ function openModal(c) {
   document.getElementById('modal-title-zh').innerText = c.flag + " " + c.name;
   document.getElementById('modal-title-en').innerText = c.en;
   const container = document.getElementById('student-container');
-  container.innerHTML = '';
+  container.innerHTML = ''; container.scrollTop = 0;
   c.students.forEach(s => {
     const card = document.createElement('div');
     card.className = 'student-card';
@@ -277,13 +279,29 @@ window.onload = () => {
     listEl.appendChild(btn);
   });
   
+  // ── 渲染名單頁地圖與亮點 ──
   d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json').then(world => {
     const allFeats = topojson.feature(world, world.objects.countries);
-    const filteredFeats = allFeats.features.filter(d => d.id !== '010');
+    const filteredFeats = allFeats.features.filter(d => d.id !== '010'); // 排除南極
+    
     const listSvg = d3.select('#list-map-svg');
     const listRect = document.getElementById('list-map-svg').getBoundingClientRect();
     const listProj = d3.geoNaturalEarth1().scale(listRect.width/7.2).translate([listRect.width/2, listRect.height/1.85]);
-    listSvg.append('g').selectAll('path').data(filteredFeats).join('path').attr('d', d3.geoPath(listProj)).attr('fill', '#EEE').attr('stroke', '#FFF');
+    
+    // 繪製地圖底色
+    listSvg.append('g').selectAll('path').data(filteredFeats).join('path')
+      .attr('d', d3.geoPath(listProj))
+      .attr('fill', '#EEE').attr('stroke', '#FFF').attr('stroke-width', 0.5);
+
+    // 關鍵修改：在地圖上標示交換據點 (亮點)
+    countries.forEach(c => {
+      const [dx, dy] = listProj(c.center);
+      
+      // 繪製圓點陰影/發光感
+      listSvg.append('circle').attr('cx', dx).attr('cy', dy).attr('r', 5).attr('fill', c.color).attr('opacity', 0.3);
+      // 繪製實心圓點
+      listSvg.append('circle').attr('cx', dx).attr('cy', dy).attr('r', 2.5).attr('fill', c.color).attr('stroke', 'white').attr('stroke-width', 0.5);
+    });
   });
 };
 </script>
