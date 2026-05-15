@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>輔大企管交換學生版圖 - 直式互動版</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Nunito', 'Microsoft JhengHei', '微軟正黑體', sans-serif;
+  background: #2C3E50;
+  height: 100vh; width: 100vw;
+  overflow: hidden; 
+  display: flex; justify-content: center; align-items: center;
+}
+
+#poster-wrapper {
+  width: 1080px; height: 1920px;
+  background: white;
+  display: flex; flex-direction: column;
+  position: relative;
+  box-shadow: 0 0 100px rgba(0,0,0,0.5);
+  transform-origin: center center;
+}
+
+/* ── HEADER (瘦身優化：整體往上抬) ── */
+.header {
+  background: linear-gradient(135deg, #6C5CE7 0%, #a29bfe 45%, #fd79a8 100%);
+  padding: 40px 40px 30px; /* 縮減 Padding 讓畫面上移 */
+  text-align: center; color: white;
+}
+.header .logo-badge { font-size: 50px; margin-bottom: 15px; } /* 縮小 Badge */
+.header .main-title { font-size: 68px; font-weight: 900; letter-spacing: 4px; line-height: 1.1; }
+.header .subtitle { font-size: 26px; opacity: 0.9; margin-top: 10px; letter-spacing: 6px; }
+
+/* ── MAP AREA (高度微調) ── */
+.map-container {
+  height: 480px; /* 縮減高度 */
+  background: linear-gradient(180deg, #DDEFFF 0%, #FFFFFF 100%);
+  position: relative;
+}
+#map-svg { width: 100%; height: 100%; }
+
+/* ── STATS AREA (間距縮減) ── */
+.stats-bar {
+  display: flex; justify-content: space-around;
+  padding: 30px 40px; /* 縮減間距 */
+  background: #2C3E50; color: white;
+}
+.stat-item { text-align: center; }
+.stat-num { font-size: 72px; font-weight: 900; color: #74B9FF; line-height: 1; }
+.stat-label { font-size: 24px; margin-top: 8px; opacity: 0.8; font-weight: 700; }
+
+/* ── 國家清單區域 (現在位置更高了) ── */
+.country-list-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 30px 60px;
+  display: flex; flex-direction: column; gap: 25px;
+  background: #F8F9FF;
+}
+.country-btn {
+  background: white; border-radius: 30px; padding: 40px 50px;
+  display: flex; align-items: center; justify-content: space-between;
+  box-shadow: 0 10px 30px rgba(80,80,180,0.08);
+  border: 1px solid #E0E0E0;
+  cursor: pointer; transition: all 0.2s ease;
+}
+.country-btn:active { transform: scale(0.97); background: #F0F0F0; }
+.country-info { display: flex; align-items: center; gap: 35px; }
+.country-flag { font-size: 70px; }
+.country-name-zh { font-size: 48px; font-weight: 900; color: #2D3436; }
+.country-name-en { font-size: 24px; color: #BBB; font-weight: 700; text-transform: uppercase; }
+.country-count {
+  background: #6C5CE7; color: white;
+  padding: 10px 30px; border-radius: 50px;
+  font-size: 30px; font-weight: 800;
+}
+
+/* ── 彈出視窗 ── */
+#modal-overlay {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.75);
+  display: none; justify-content: center; align-items: center;
+  z-index: 10000; backdrop-filter: blur(15px);
+}
+.modal-content {
+  width: 950px; height: 1550px;
+  background: white; border-radius: 60px;
+  display: flex; flex-direction: column;
+  overflow: hidden; 
+  animation: popUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+@keyframes popUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.modal-header {
+  padding: 60px; color: white; text-align: center; position: relative;
+  flex-shrink: 0;
+}
+.close-btn {
+  position: absolute; top: 40px; right: 50px;
+  font-size: 80px; color: white; cursor: pointer; line-height: 1;
+}
+
+.student-grid {
+  flex: 1;
+  overflow-y: auto;
+  padding: 40px 60px 80px;
+  display: flex; flex-direction: column; gap: 30px;
+  -webkit-overflow-scrolling: touch;
+}
+.student-grid::-webkit-scrollbar { width: 12px; }
+.student-grid::-webkit-scrollbar-thumb { background: #CCC; border-radius: 10px; }
+
+.student-card {
+  background: #F8F9FA; padding: 35px; border-radius: 25px;
+  border: 1px solid #EEE;
+}
+.st-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.st-name { font-size: 46px; font-weight: 900; color: #2D3436; }
+.st-year { font-size: 26px; font-weight: 800; padding: 6px 20px; border-radius: 10px; }
+.st-sch { font-size: 32px; color: #555; font-weight: 700; border-left: 8px solid #6C5CE7; padding-left: 22px; line-height: 1.4; }
+
+/* ── FOOTER ── */
+.footer {
+  padding: 40px; text-align: center; background: white;
+  font-size: 24px; font-weight: 800; color: #636E72; border-top: 1px solid #EEE;
+}
+</style>
+</head>
+<body>
+
+<div id="poster-wrapper">
+  <div class="header">
+    <div class="logo-badge">✝</div>
+    <div class="main-title">輔大企管交換學生版圖</div>
+    <div class="subtitle">FJCU BUSINESS ADMINISTRATION</div>
+  </div>
+
+  <div class="map-container">
+    <svg id="map-svg"></svg>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-item"><div class="stat-num">11</div><div class="stat-label">國家地區</div></div>
+    <div class="stat-item"><div class="stat-num">33</div><div class="stat-label">合作院校</div></div>
+    <div class="stat-item"><div class="stat-num">47</div><div class="stat-label">交換學生</div></div>
+  </div>
+
+  <div class="country-list-scroll" id="country-list"></div>
+
+  <div class="footer">🌐 國際視野 | 📚 跨域學習 | 🤝 文化交流 | 🏆 全球競爭力</div>
+
+  <div id="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header" id="modal-header">
+        <div class="close-btn" onclick="closeModal()">×</div>
+        <div id="modal-title-zh" style="font-size: 64px; font-weight: 900;"></div>
+        <div id="modal-title-en" style="font-size: 28px; opacity: 0.8; margin-top: 12px; letter-spacing: 2px;"></div>
+      </div>
+      <div class="student-grid" id="student-container"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// 完整數據 (中國)
+const countries = [
+  { id:'250', name:'法國', en:'France', flag:'🇫🇷', center:[2.3, 47], color:'#6C5CE7',
+    students:[
+      {n:'田芷翎', s:'112-1', sch:'諾曼第管理學院'}, {n:'洪巧蓁', s:'112-2', sch:'KEDGE高等商業學院'},
+      {n:'羅芝盈', s:'112-2', sch:'里昂天主教大學'}, {n:'林心瑜', s:'112-2', sch:'里昂天主教大學'},
+      {n:'傅子珊', s:'112-2', sch:'諾曼第管理學院'}, {n:'馬恩博', s:'112-2', sch:'諾曼第管理學院'},
+      {n:'黃若茵', s:'113-1', sch:'亞塞格管理學院'}, {n:'殷品筑', s:'113-2', sch:'KEDGE高等商業學院'},
+      {n:'劉又瑄', s:'113-2', sch:'翁傑高等商學院'}, {n:'邱慧欣', s:'113-2', sch:'KEDGE高等商業學院'},
+      {n:'陳彥蓁', s:'114-2', sch:'天主教里爾大學'}, {n:'林怡辰', s:'114-2', sch:'翁傑高等商學院'}
+    ]},
+  { id:'156', name:'中國', en:'China', flag:'🇨🇳', center:[104, 35], color:'#00CEC9',
+    students:[
+      {n:'楊雅珽', s:'112-2', sch:'中國人民大學'}, {n:'翁寧', s:'112-2', sch:'西南財經大學'},
+      {n:'林怡萱', s:'112-2', sch:'復旦大學'}, {n:'李曉芸', s:'113-2', sch:'復旦大學'},
+      {n:'蔣博安', s:'113-2', sch:'武漢大學'}, {n:'林郁心', s:'113-2', sch:'清華大學'}
+    ]},
+  { id:'410', name:'韓國', en:'Korea', flag:'🇰🇷', center:[127, 36], color:'#00CEC9',
+    students:[
+      {n:'劉雅婷', s:'112-2', sch:'首爾市立大學'}, {n:'李明曜', s:'112-2', sch:'誠信女子大學'},
+      {n:'許愛翎', s:'113-2', sch:'天主教大學'}, {n:'蔡佩蓁', s:'113-2', sch:'崇實大學'},
+      {n:'潘玟穎', s:'113-2', sch:'漢陽大學'}, {n:'蘇榆真', s:'113-2', sch:'成均館大學'},
+      {n:'葉珉秀', s:'113-2', sch:'天主教大學'}, {n:'鄭以安', s:'114-1', sch:'仁川大學'},
+      {n:'蔡安妍', s:'114-2', sch:'崇實大學'}
+    ]},
+  { id:'392', name:'日本', en:'Japan', flag:'🇯🇵', center:[138, 36], color:'#00CEC9',
+    students:[
+      {n:'廖榮強', s:'112-2', sch:'同志社大學'}, {n:'洪菉攸', s:'112-2', sch:'東洋大學'},
+      {n:'羅羽媗', s:'113-1', sch:'東洋大學'}, {n:'陳柏勳', s:'113-2', sch:'西南學院大學'},
+      {n:'徐楷', s:'113-2', sch:'西南學院大學'}, {n:'林艾妮', s:'114-2', sch:'大阪商業大學'}
+    ]},
+  { id:'528', name:'荷蘭', en:'Netherlands', flag:'🇳🇱', center:[5.3, 52.3], color:'#6C5CE7',
+    students:[
+      {n:'梅雨青', s:'112-2', sch:'方堤斯應用科技大學'}, {n:'謝詠淇', s:'112-2', sch:'格羅寧根大學'},
+      {n:'張庭瑄', s:'114-2', sch:'格羅寧根大學'}
+    ]},
+  { id:'276', name:'德國', en:'Germany', flag:'🇩🇪', center:[10.4, 51], color:'#6C5CE7',
+    students:[{n:'卜慧綸', s:'112-2', sch:'飛利浦馬堡大學'}, {n:'談家吟', s:'112-2', sch:'雷根斯堡大學'}]},
+  { id:'203', name:'捷克', en:'Czech', flag:'🇨🇿', center:[15.4, 49.8], color:'#6C5CE7',
+    students:[{n:'呂孟宸', s:'112-2', sch:'茲林湯馬士巴塔大學'}, {n:'盧宣瑜', s:'114-1', sch:'茲林湯馬士巴塔大學'}, {n:'徐子翊', s:'114-2', sch:'茲林湯馬士巴塔大學'}]},
+  { id:'40',  name:'奧地利', en:'Austria', flag:'🇦🇹', center:[14.5, 47.5], color:'#6C5CE7',
+    students:[{n:'李承澤', s:'113-2', sch:'薩爾斯堡大學'}, {n:'林孟霓', s:'114-1', sch:'上奧科技大學'}]},
+  { id:'380', name:'義大利', en:'Italy', flag:'🇮🇹', center:[12.5, 41.8], color:'#6C5CE7',
+    students:[{n:'吳育端', s:'113-1', sch:'羅馬國際研究大學'}]},
+  { id:'840', name:'美國', en:'USA', flag:'🇺🇸', center:[-95, 37], color:'#FF7675',
+    students:[{n:'蔡奇浩', s:'112-2', sch:'聖道大學'}, {n:'林晏甄', s:'113-2', sch:'匹茲堡州立大學'}]},
+  { id:'056', name:'比利時', en:'Belgium', flag:'🇧🇪', center:[4.4, 50.5], color:'#6C5CE7',
+    students:[{n:'郭旻佳', s:'114-1', sch:'那慕爾大學'}]},
+];
+
+// 渲染清單
+const listEl = document.getElementById('country-list');
+countries.forEach(c => {
+  const btn = document.createElement('div');
+  btn.className = 'country-btn';
+  btn.onclick = () => openModal(c);
+  btn.innerHTML = `<div class="country-info"><div class="country-flag">${c.flag}</div><div><div class="country-name-zh">${c.name}</div><div class="country-name-en">${c.en}</div></div></div><div class="country-count">${c.students.length} 位</div>`;
+  listEl.appendChild(btn);
+});
+
+// 彈窗
+const overlay = document.getElementById('modal-overlay');
+function openModal(c) {
+  document.getElementById('modal-header').style.background = c.color;
+  document.getElementById('modal-title-zh').innerText = c.flag + " " + c.name;
+  document.getElementById('modal-title-en').innerText = c.en;
+  const container = document.getElementById('student-container');
+  container.innerHTML = '';
+  container.scrollTop = 0;
+  c.students.forEach(s => {
+    const card = document.createElement('div');
+    card.className = 'student-card';
+    const badgeColor = s.s.startsWith('112') ? '#FDEBD0' : s.s.startsWith('113') ? '#EDE0FF' : '#D5F5E3';
+    const textColor = s.s.startsWith('112') ? '#B7770D' : s.s.startsWith('113') ? '#5B2C8D' : '#1A7A3F';
+    card.innerHTML = `<div class="st-top"><div class="st-name">${s.n}</div><div class="st-year" style="background:${badgeColor}; color:${textColor}">${s.s}</div></div><div class="st-sch">${s.sch}</div>`;
+    container.appendChild(card);
+  });
+  overlay.style.display = 'flex';
+}
+function closeModal() { overlay.style.display = 'none'; }
+
+// 地圖
+const svg = d3.select('#map-svg');
+const projection = d3.geoNaturalEarth1().scale(170).translate([540, 260]);
+d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json').then(world => {
+  const feats = topojson.feature(world, world.objects.countries);
+  const highlightSet = new Set(countries.map(c=>c.id));
+  svg.append('g').selectAll('path').data(feats.features).join('path').attr('d', d3.geoPath(projection)).attr('fill', d => highlightSet.has(d.id) ? '#6C5CE7' : '#EEE').attr('stroke', 'white').attr('stroke-width', 1);
+  countries.forEach(c => {
+    const [px, py] = projection(c.center);
+    svg.append('circle').attr('cx', px).attr('cy', py).attr('r', 8).attr('fill', '#FD79A8').attr('stroke', 'white').attr('stroke-width',2);
+  });
+});
+
+// 縮放
+function autoScale() {
+  const wrapper = document.getElementById('poster-wrapper');
+  const scale = Math.min(window.innerWidth / 1080, window.innerHeight / 1920);
+  wrapper.style.transform = `scale(${scale})`;
+}
+window.addEventListener('resize', autoScale);
+window.addEventListener('load', autoScale);
+</script>
+</body>
+</html>
