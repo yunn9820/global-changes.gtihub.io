@@ -2,152 +2,133 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>輔大企管交換學生版圖 - 完整互動最終版</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>輔大企管交換學生版圖 - 手機版</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
 <style>
 /* ── 基礎全域設定 ── */
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 body {
   font-family: 'Nunito', 'Microsoft JhengHei', '微軟正黑體', sans-serif;
   background: #F0F4F8;
   height: 100vh; width: 100vw;
   overflow: hidden; 
-  display: flex; justify-content: center; align-items: center;
 }
 
-#poster-wrapper {
-  width: 1080px; height: 1920px;
-  background: #FFFFFF;
+#app-container {
+  max-width: 500px; /* 模擬手機寬度上限，避免平板上太散 */
+  height: 100vh;
+  margin: 0 auto;
+  background: white;
   position: relative;
   overflow: hidden;
-  transform-origin: center center;
-  box-shadow: 0 0 100px rgba(0,0,0,0.2);
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
 }
 
 /* ── 頁面切換動畫 ── */
 .page {
   position: absolute; width: 100%; height: 100%;
   display: flex; flex-direction: column;
-  transition: opacity 0.5s ease, transform 0.5s ease;
+  transition: opacity 0.4s ease, transform 0.4s ease;
   background: white;
 }
-.hidden { opacity: 0; pointer-events: none; transform: scale(0.95); }
+.hidden { opacity: 0; pointer-events: none; transform: translateX(20px); }
 
-/* ──【頁面 1：互動首頁】── */
+/* ──【頁面 1：手機首頁】── */
 .hero-header {
   background: linear-gradient(135deg, #6C5CE7 0%, #a29bfe 45%, #fd79a8 100%);
-  padding: 50px 40px 40px; text-align: center; color: white;
+  padding: 40px 20px 30px; text-align: center; color: white;
 }
 .logo-badge {
-  width: 100px; height: 100px; border-radius: 30px;
-  background: rgba(255, 255, 255, 0.3); border: 3px solid #FFF;
+  width: 60px; height: 60px; border-radius: 18px;
+  background: rgba(255, 255, 255, 0.3); border: 2px solid #FFF;
   display: flex; align-items: center; justify-content: center;
-  font-size: 55px; color: white; margin: 0 auto 25px;
-  animation: float 3s ease-in-out infinite;
+  font-size: 30px; color: white; margin: 0 auto 15px;
 }
-@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
-
 .main-title {
-  font-size: 82px; font-weight: 900; color: white; 
-  letter-spacing: 4px; white-space: nowrap; margin-bottom: 15px;
-  text-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  font-size: 28px; font-weight: 900; color: white; 
+  letter-spacing: 2px; white-space: nowrap; margin-bottom: 8px;
 }
-.subtitle { font-size: 32px; color: rgba(255, 255, 255, 0.9); letter-spacing: 8px; font-weight: 700; }
+.subtitle { font-size: 14px; color: rgba(255, 255, 255, 0.9); letter-spacing: 3px; font-weight: 700; }
 
-.hero-map-visual { height: 420px; position: relative; display: flex; align-items: center; justify-content: center; }
+.hero-map-visual { flex: 1; min-height: 250px; position: relative; display: flex; align-items: center; justify-content: center; background: #FFF; }
 #hero-map-svg { width: 100%; height: 100%; }
 
 .hero-stats {
-  display: flex; justify-content: space-around; padding: 50px 40px;
-  background: rgba(255, 255, 255, 0.8); border-top: 2px solid rgba(80, 80, 180, 0.05);
+  display: flex; justify-content: space-around; padding: 25px 15px;
+  background: #2C3E50; color: white;
 }
-.hero-stat-num { font-size: 110px; font-weight: 900; color: #6C5CE7; line-height: 1; margin-bottom: 15px; }
-.hero-stat-label { font-size: 34px; color: #2D3436; font-weight: 700; }
+.hero-stat-num { font-size: 36px; font-weight: 900; color: #74B9FF; line-height: 1; margin-bottom: 5px; }
+.hero-stat-label { font-size: 12px; opacity: 0.8; font-weight: 700; }
 
 .cta-area {
-  flex: 1; display: flex; flex-direction: column; justify-content: center;
-  text-align: center; background: white; padding-bottom: 150px;
+  padding: 40px 20px 60px; text-align: center; background: white;
 }
 .explore-btn {
   background: linear-gradient(135deg, #6C5CE7 0%, #FD79A8 100%);
-  color: white; font-size: 52px; font-weight: 900; padding: 50px 140px; border-radius: 100px;
-  box-shadow: 0 15px 40px rgba(108, 92, 231, 0.3);
-  animation: pulse 2s infinite; border: none; cursor: pointer; letter-spacing: 4px;
+  color: white; font-size: 20px; font-weight: 900; padding: 18px 50px; border-radius: 50px;
+  box-shadow: 0 10px 20px rgba(108, 92, 231, 0.3);
+  border: none; cursor: pointer; letter-spacing: 2px; width: 100%;
 }
-@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-/* ──【頁面 2：國家名單頁】── */
+/* ──【頁面 2：手機名單頁】── */
 .list-header {
-  background: #2C3E50; padding: 40px 60px;
+  background: #2C3E50; padding: 15px 20px;
   display: flex; justify-content: space-between; align-items: center; color: white;
 }
 .back-btn {
-  font-size: 30px; font-weight: 800; color: white; background: rgba(255,255,255,0.1);
-  padding: 15px 35px; border-radius: 50px; cursor: pointer; border: 1px solid rgba(255,255,255,0.3);
+  font-size: 14px; font-weight: 800; color: white; background: rgba(255,255,255,0.1);
+  padding: 8px 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2);
 }
-.list-map-mini { height: 350px; background: #F8F9FF; position: relative; }
-.list-stats-compact {
-  display: flex; justify-content: space-around; padding: 30px;
-  background: #6C5CE7; color: white;
-}
+.list-map-mini { height: 150px; background: #F8F9FF; position: relative; }
 .country-list-container {
-  flex: 1; overflow-y: auto; padding: 40px 60px;
-  display: flex; flex-direction: column; gap: 30px; background: #F4F7FF;
+  flex: 1; overflow-y: auto; padding: 20px;
+  display: flex; flex-direction: column; gap: 15px; background: #F4F7FF;
 }
-/* 國家按鈕 - 放大版 */
 .country-btn {
-  background: white; border-radius: 35px; padding: 40px 50px;
+  background: white; border-radius: 15px; padding: 15px 20px;
   display: flex; align-items: center; justify-content: space-between;
-  box-shadow: 0 12px 35px rgba(80,80,180,0.1); border: 1px solid #E0E0E0;
-  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #EEE;
 }
-.country-btn:active { background: #F0F0F0; transform: scale(0.98); }
-.country-info { display: flex; align-items: center; gap: 45px; }
-
-/* 國旗放大至 100px */
-.country-flag { font-size: 100px; line-height: 1; }
-
-.country-name-zh { font-size: 52px; font-weight: 900; color: #2D3436; }
-.country-name-en { font-size: 26px; color: #BBB; font-weight: 700; text-transform: uppercase; }
-
-/* 人數標籤放大 */
+.country-info { display: flex; align-items: center; gap: 15px; }
+.country-flag { font-size: 32px; }
+.country-name-zh { font-size: 18px; font-weight: 900; color: #2D3436; }
+.country-name-en { font-size: 12px; color: #BBB; font-weight: 700; text-transform: uppercase; }
 .country-count {
   background: #6C5CE7; color: white;
-  padding: 18px 45px; border-radius: 60px;
-  font-size: 42px; font-weight: 800;
-  box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
+  padding: 5px 12px; border-radius: 20px;
+  font-size: 14px; font-weight: 800;
 }
 
-/* ── 彈出視窗 ── */
+/* ── 手機版 Modal ── */
 #modal-overlay {
   position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.75); display: none; justify-content: center; align-items: center;
-  z-index: 10000; backdrop-filter: blur(15px);
+  background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: flex-end;
+  z-index: 10000; backdrop-filter: blur(8px);
 }
 .modal-content {
-  width: 950px; height: 1550px; background: white; border-radius: 60px;
+  width: 100%; height: 85%; background: white; border-radius: 30px 30px 0 0;
   display: flex; flex-direction: column; overflow: hidden;
-  animation: popUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: slideUp 0.3s ease-out;
 }
-@keyframes popUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-.modal-header { padding: 60px; color: white; text-align: center; position: relative; flex-shrink: 0; }
-.close-btn { position: absolute; top: 40px; right: 50px; font-size: 80px; color: white; cursor: pointer; }
-.student-grid { flex: 1; overflow-y: auto; padding: 40px 60px 80px; display: flex; flex-direction: column; gap: 30px; }
-.student-card { background: #F8F9FA; padding: 35px; border-radius: 25px; border: 1px solid #EEE; }
-.st-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-.st-name { font-size: 46px; font-weight: 900; color: #2D3436; }
-.st-year { font-size: 26px; font-weight: 800; padding: 6px 20px; border-radius: 10px; }
-.st-sch { font-size: 32px; color: #555; font-weight: 700; border-left: 8px solid #6C5CE7; padding-left: 22px; line-height: 1.4; }
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.modal-header { padding: 30px 20px; color: white; text-align: center; position: relative; }
+.close-btn { position: absolute; top: 15px; right: 20px; font-size: 32px; color: white; }
+.student-grid { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+.student-card { background: #F8F9FA; padding: 15px; border-radius: 12px; border: 1px solid #EEE; }
+.st-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+.st-name { font-size: 18px; font-weight: 900; color: #2D3436; }
+.st-year { font-size: 12px; font-weight: 800; padding: 3px 10px; border-radius: 6px; }
+.st-sch { font-size: 14px; color: #555; font-weight: 700; border-left: 4px solid #6C5CE7; padding-left: 10px; margin-top: 5px; }
 
-.footer { padding: 40px; text-align: center; font-size: 24px; font-weight: 800; color: #636E72; }
+.footer { padding: 15px; text-align: center; font-size: 11px; font-weight: 800; color: #999; background: white; }
 </style>
 </head>
 <body>
 
-<div id="poster-wrapper">
+<div id="app-container">
   
   <div id="hero-page" class="page">
     <div class="hero-header">
@@ -164,37 +145,29 @@ body {
       <div class="stat-box"><div class="hero-stat-num">47</div><div class="hero-stat-label">交換學子</div></div>
     </div>
     <div class="cta-area">
-      <div>
-        <button class="explore-btn" onclick="showListPage()">按此探索全球據點</button>
-        <p style="margin-top:40px; font-size:28px; color:#ABB8C3; font-weight:700;">點擊螢幕開始體驗互動版圖</p>
-      </div>
+      <button class="explore-btn" onclick="showListPage()">點此探索全球據點</button>
     </div>
   </div>
 
   <div id="list-page" class="page hidden">
     <div class="list-header">
-      <div style="font-size: 42px; font-weight: 900;">🌍 據點探索</div>
-      <div class="back-btn" onclick="showHeroPage()">🏠 返回首頁</div>
+      <div style="font-size: 18px; font-weight: 900;">🌍 據點探索</div>
+      <div class="back-btn" onclick="showHeroPage()">🏠 返回</div>
     </div>
     <div class="list-map-mini">
       <svg id="list-map-svg" style="width:100%; height:100%;"></svg>
     </div>
-    <div class="list-stats-compact">
-      <div style="text-align:center;"><div style="font-size:52px; font-weight:900;">11</div><div style="font-size:22px; opacity:0.8;">國家地區</div></div>
-      <div style="text-align:center;"><div style="font-size:52px; font-weight:900;">33</div><div style="font-size:22px; opacity:0.8;">合作院校</div></div>
-      <div style="text-align:center;"><div style="font-size:52px; font-weight:900;">47</div><div style="font-size:22px; opacity:0.8;">交換學生</div></div>
-    </div>
     <div class="country-list-container" id="country-list">
       </div>
-    <div class="footer">🌐 國際視野 | 📚 跨域學習 | 🤝 文化交流 | 🏆 全球競爭力</div>
+    <div class="footer">🌐 國際視野 | 📚 跨域學習 | 🤝 文化交流</div>
   </div>
 
   <div id="modal-overlay">
     <div class="modal-content">
       <div class="modal-header" id="modal-header">
         <div class="close-btn" onclick="closeModal()">×</div>
-        <div id="modal-title-zh" style="font-size: 64px; font-weight: 900;"></div>
-        <div id="modal-title-en" style="font-size: 28px; opacity: 0.8; margin-top: 12px;"></div>
+        <div id="modal-title-zh" style="font-size: 24px; font-weight: 900;"></div>
+        <div id="modal-title-en" style="font-size: 13px; opacity: 0.8; margin-top: 5px;"></div>
       </div>
       <div class="student-grid" id="student-container"></div>
     </div>
@@ -266,7 +239,7 @@ function openModal(c) {
   document.getElementById('modal-title-zh').innerText = c.flag + " " + c.name;
   document.getElementById('modal-title-en').innerText = c.en;
   const container = document.getElementById('student-container');
-  container.innerHTML = ''; container.scrollTop = 0;
+  container.innerHTML = '';
   c.students.forEach(s => {
     const card = document.createElement('div');
     card.className = 'student-card';
@@ -286,45 +259,31 @@ window.onload = () => {
     const btn = document.createElement('div');
     btn.className = 'country-btn';
     btn.onclick = () => openModal(c);
-    btn.innerHTML = `<div class="country-info"><div class="country-flag">${c.flag}</div><div><div class="country-name-zh">${c.name}</div><div class="country-name-en">${c.en}</div></div></div><div class="country-count">${c.students.length} 位</div>`;
+    btn.innerHTML = `<div class="country-info"><div class="country-flag">${c.flag}</div><div><div class="country-name-zh">${c.name}</div><div class="country-name-en">${c.en}</div></div></div><div class="country-count">${c.students.length}</div>`;
     listEl.appendChild(btn);
   });
   
   d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json').then(world => {
-    // 關鍵修正：排除南極洲 (ID 010)
     const allFeats = topojson.feature(world, world.objects.countries);
     const filteredFeats = allFeats.features.filter(d => d.id !== '010');
     
-    const highlightSet = new Set(countries.map(c=>c.id));
-    
-    // 首頁地圖
+    // 手機首頁地圖 (自動縮放比例)
     const heroSvg = d3.select('#hero-map-svg');
-    const heroProj = d3.geoNaturalEarth1().scale(150).translate([540, 210]);
-    heroSvg.append('g').selectAll('path').data(filteredFeats).join('path').attr('d', d3.geoPath(heroProj)).attr('fill', '#DCDCDC').attr('stroke', '#FFF');
+    const heroRect = document.getElementById('hero-map-svg').getBoundingClientRect();
+    const heroProj = d3.geoNaturalEarth1().scale(heroRect.width/6.5).translate([heroRect.width/2, heroRect.height/2]);
+    heroSvg.append('g').selectAll('path').data(filteredFeats).join('path').attr('d', d3.geoPath(heroProj)).attr('fill', '#EEE').attr('stroke', '#FFF');
     countries.forEach(c => {
       const [dx, dy] = heroProj(c.center);
-      heroSvg.append('circle').attr('cx', dx).attr('cy', dy).attr('r', 8).attr('fill', '#6C5CE7').attr('stroke', 'white').attr('stroke-width', 2);
+      heroSvg.append('circle').attr('cx', dx).attr('cy', dy).attr('r', 4).attr('fill', '#6C5CE7');
     });
 
     // 名單頁地圖
     const listSvg = d3.select('#list-map-svg');
-    const listProj = d3.geoNaturalEarth1().scale(140).translate([540, 180]);
+    const listRect = document.getElementById('list-map-svg').getBoundingClientRect();
+    const listProj = d3.geoNaturalEarth1().scale(listRect.width/7).translate([listRect.width/2, listRect.height/1.8]);
     listSvg.append('g').selectAll('path').data(filteredFeats).join('path').attr('d', d3.geoPath(listProj)).attr('fill', '#EEE').attr('stroke', '#FFF');
-    countries.forEach(c => {
-      const [dx, dy] = listProj(c.center);
-      listSvg.append('circle').attr('cx', dx).attr('cy', dy).attr('r', 6).attr('fill', '#6C5CE7').attr('stroke', 'white').attr('stroke-width', 1);
-    });
   });
-  
-  autoScale();
 };
-
-function autoScale() {
-  const wrapper = document.getElementById('poster-wrapper');
-  const scale = Math.min(window.innerWidth / 1080, window.innerHeight / 1920);
-  wrapper.style.transform = `scale(${scale})`;
-}
-window.addEventListener('resize', autoScale);
 </script>
 </body>
 </html>
